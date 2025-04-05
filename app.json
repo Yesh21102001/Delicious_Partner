@@ -1,0 +1,19 @@
+{
+  "expo": {
+    "name": "partner",
+    "slug": "partner",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "splash": {
+      "image": "./src/assets/Black and Red Gaming Company Logo (1).jpg",
+      "resizeMode": "contain",
+      "backgroundColor": "#ffffff"
+    },
+    "android": {
+      "newArchEnabled": true
+    },
+    "ios": {
+      "newArchEnabled": true
+    }
+  }
+}
