@@ -5,9 +5,9 @@
     "version": "1.0.0",
     "orientation": "portrait",
     "splash": {
-      "image": "./src/assets/Black and Red Gaming Company Logo (1).jpg",
+      "image": "./src/assets/splash1.png",
       "resizeMode": "contain",
-      "backgroundColor": "#ffffff"
+      "backgroundColor": "#3B271C"
     },
     "android": {
       "newArchEnabled": true
