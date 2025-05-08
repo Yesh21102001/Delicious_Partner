@@ -60,7 +60,7 @@ const Orders = () => {
         renderItem={({ item }) => (
           <View style={styles.orderItem}>
             <View style={[styles.statusContainer, {
-              backgroundColor: item.status === "Delivered" ? "#4CAF50" : item.status === "Pending" ? "orange" : "red"
+              backgroundColor: item.status === "Delivered" ? "green" : item.status === "Pending" ? "orange" : "red"
             }]}>  
               <Text style={styles.statusText}>{item.status}</Text>
             </View>
@@ -95,7 +95,7 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   button: {
-    backgroundColor: "#4CAF50",
+    backgroundColor: "#3B271C",
     padding: 10,
     borderRadius: 5,
     alignItems: "center",
@@ -156,7 +156,7 @@ const styles = StyleSheet.create({
   priceText: {
     fontSize: 16,
     fontWeight: "bold",
-    color: "#4CAF50",
+    color: "green",
   },
   emptyText: {
     textAlign: "center",

@@ -1,59 +1,69 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert, ScrollView } from 'react-native';
+import {
+  View,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  StyleSheet,
+  Alert,
+  ScrollView,
+  Image,
+  ActivityIndicator,
+} from 'react-native';
+import Icon from 'react-native-vector-icons/Ionicons';
 
 const Login = ({ navigation }) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [loading, setLoading] = useState(false);
 
-  // Disable the header for this screen
   React.useLayoutEffect(() => {
-    navigation.setOptions({
-      headerShown: false,  // This will hide the header for the Login screen
-    });
+    navigation.setOptions({ headerShown: false });
   }, [navigation]);
 
-  const handleLogin = () => {
-    // Removed the validation and predefined checks
-    Alert.alert('Login Successful', 'Welcome back!');
-    navigation.navigate('Home');  // Navigate to Home page after successful login
+  const handleLogin = async () => {
+    navigation.navigate('Home');
   };
 
   const handleForgotPassword = () => {
-    navigation.navigate('handleForgotPassword');
-  }
+    navigation.navigate('ForgotPassword');
+  };
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
-      <Text style={styles.title}>Login</Text>
+      <Image source={require('../../assets/Logo.png')} style={styles.logo} resizeMode="contain" />
+      <Text style={styles.title}>Welcome Back!</Text>
 
-      {/* Email input */}
-      <TextInput
-        style={styles.input}
-        placeholder="Enter your email"
-        placeholderTextColor="#888"
-        value={email}
-        onChangeText={setEmail}
-        keyboardType="email-address"
-        autoCapitalize="none"
-      />
+      <View style={styles.inputContainer}>
+        <Icon name="mail-outline" size={20} color="#7D5A50" style={styles.inputIcon} />
+        <TextInput
+          style={styles.input}
+          placeholder="Enter your email"
+          placeholderTextColor="#B2A59B"
+          value={email}
+          onChangeText={setEmail}
+          keyboardType="email-address"
+          autoCapitalize="none"
+        />
+      </View>
 
-      {/* Password input */}
-      <TextInput
-        style={styles.input}
-        placeholder="Enter your password"
-        placeholderTextColor="#888"
-        value={password}
-        onChangeText={setPassword}
-        secureTextEntry
-        autoCapitalize="none"
-      />
+      <View style={styles.inputContainer}>
+        <Icon name="lock-closed-outline" size={20} color="#7D5A50" style={styles.inputIcon} />
+        <TextInput
+          style={styles.input}
+          placeholder="Enter your password"
+          placeholderTextColor="#B2A59B"
+          value={password}
+          onChangeText={setPassword}
+          secureTextEntry
+          autoCapitalize="none"
+        />
+      </View>
 
-      {/* Login button */}
-      <TouchableOpacity style={styles.button} onPress={handleLogin}>
-        <Text style={styles.buttonText}>Login</Text>
+      <TouchableOpacity style={styles.button} onPress={handleLogin} disabled={loading}>
+        {loading ? <ActivityIndicator color="#3B271C" /> : <Text style={styles.buttonText}>Login</Text>}
       </TouchableOpacity>
 
-      {/* Forgot Password link */}
       <TouchableOpacity onPress={handleForgotPassword}>
         <Text style={styles.forgotPasswordText}>Forgot Password?</Text>
       </TouchableOpacity>
@@ -63,34 +73,45 @@ const Login = ({ navigation }) => {
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
+    flexGrow: 1,
     justifyContent: 'center',
     padding: 20,
-    backgroundColor: '#f0f1f6', 
+    backgroundColor: '#3B271C',
+  },
+  logo: {
+    width: 200,
+    height: 200,
+    alignSelf: 'center',
+    marginBottom: 10,
   },
   title: {
-    fontSize: 32,
-    fontWeight: 'bold',
-    color: '#333',
+    fontSize: 30,
+    fontWeight: '600',
+    color: '#F5E8C7',
     textAlign: 'center',
-    marginBottom: 40,
+    marginBottom: 30,
+  },
+  inputContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#F5E8C7',
+    borderRadius: 12,
+    marginBottom: 20,
+    paddingHorizontal: 10,
+    borderWidth: 1,
+    borderColor: '#E0C097',
+  },
+  inputIcon: {
+    marginRight: 8,
   },
   input: {
+    flex: 1,
     height: 55,
-    backgroundColor: '#ffffff',
-    borderRadius: 10,
-    marginBottom: 20,
-    paddingLeft: 20,
     fontSize: 16,
-    borderWidth: 1,
-    borderColor: '#ddd',
-    shadowColor: '#000', 
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 5,
+    color: '#3B271C',
   },
   button: {
-    backgroundColor: '#4CAF50', 
+    backgroundColor: '#E8BA58',
     paddingVertical: 15,
     borderRadius: 50,
     alignItems: 'center',
@@ -98,16 +119,16 @@ const styles = StyleSheet.create({
     elevation: 5,
   },
   buttonText: {
-    color: '#fff',
+    color: '#3B271C',
     fontSize: 18,
     fontWeight: 'bold',
   },
   forgotPasswordText: {
     textAlign: 'center',
     marginTop: 20,
-    color: '#4CAF50',
+    color: '#C8AE7D',
     fontSize: 16,
-    fontWeight: 'bold',
+    fontWeight: '500',
   },
 });
 

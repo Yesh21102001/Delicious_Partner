@@ -199,11 +199,11 @@ const BottomNavigator = () => {
                       <Ionicons
                         name={iconName}
                         size={28}
-                        color={focused ? "#4CAF50" : "gray"}
+                        color={focused ? "#E8BA58" : "gray"}
                       />
                     );
                   },
-                  tabBarActiveTintColor: "#4CAF50",
+                  tabBarActiveTintColor: "#E8BA58",
                   tabBarInactiveTintColor: "gray",
                   tabBarStyle: {
                     backgroundColor: "white",
@@ -267,14 +267,14 @@ const styles = StyleSheet.create({
     zIndex: 20,
   },
   restaurantName: {
-    color: "black",
+    color: "#E8BA58",
     fontSize: 26,
     fontWeight: "bold",
     marginBottom: 10,
     textAlign: "center",
   },
   restaurantName1: {
-    color: "black",
+    color: "#E8BA58",
     fontSize: 26,
     fontWeight: "bold",
     marginBottom: 5,
@@ -286,7 +286,7 @@ const styles = StyleSheet.create({
     marginBottom: 15,
     justifyContent: "flex-start",
     marginTop: 15,
-    backgroundColor: "#c7ebc9",
+    backgroundColor: "#F5E8C7",
     padding: 10,
     borderRadius: 10,
   },
@@ -312,7 +312,7 @@ const styles = StyleSheet.create({
   },
   sidebarContent: { marginTop: 10 },
   sidebarItem: { padding: 15, borderRadius: 8 },
-  sidebarSelected: { backgroundColor: "#c7ebc9" },
+  sidebarSelected: { backgroundColor: "#F5E8C7" },
   sidebarText: { fontSize: 18 },
   logoutContainer: {
     paddingTop: 10,
@@ -326,7 +326,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     padding: 2,
   },
-  switchOn: { backgroundColor: "#4CAF50" },
+  switchOn: { backgroundColor: "green" },
   switchOff: { backgroundColor: "red" },
   thumb: {
     width: 35,
@@ -337,18 +337,18 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   switchText: { fontSize: 10, fontWeight: "bold" },
-  onText: { color: "#4CAF50" },
+  onText: { color: "green" },
   offText: { color: "red" },
   menuButton: { padding: 10 },
   logoutButton: {
-    backgroundColor: "#4CAF50",
+    backgroundColor: "#E8BA58",
     paddingVertical: 15,
     borderRadius: 50,
     alignItems: "center",
     justifyContent: "center",
   },
   logoutText: {
-    color: "white",
+    color: "#3B271C",
     fontSize: 18,
     fontWeight: "bold",
     textAlign: "center",

@@ -7,25 +7,29 @@ import {
   FlatList,
 } from "react-native";
 import Icon from "react-native-vector-icons/FontAwesome";
+import { useNavigation } from "@react-navigation/native";
 
 const Home = () => {
   const [orders, setOrders] = useState([]);
   const [selectedStatus, setSelectedStatus] = useState("Preparing");
   const [prepTimes, setPrepTimes] = useState({});
+  const [prepCountdowns, setPrepCountdowns] = useState({});
   const [newOrderCount, setNewOrderCount] = useState(0);
+
+  const navigation = useNavigation();
 
   useEffect(() => {
     const orderTimer = setInterval(() => {
       const newOrder = {
         orderId: `ORD${Math.floor(Math.random() * 10000)}`,
         timePlaced: new Date().toLocaleTimeString(),
-        customerName: "John Doe",
         items: [
           { name: "Chicken Biryani", quantity: 1, price: 250 },
           { name: "Butter Naan", quantity: 2, price: 40 },
         ],
         totalAmount: 330,
         status: "New",
+        location: "Downtown Street, City Name",
       };
       setOrders((prevOrders) => [...prevOrders, newOrder]);
       setNewOrderCount((prev) => prev + 1);
@@ -34,16 +38,33 @@ const Home = () => {
     return () => clearInterval(orderTimer);
   }, []);
 
-  const handleAccept = (orderId) => {
-    const prepTime = prepTimes[orderId] || 20; // Default to 20 minutes
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setPrepCountdowns((prevCountdowns) => {
+        const updated = { ...prevCountdowns };
+        Object.keys(updated).forEach((orderId) => {
+          updated[orderId] -= 1;
+        });
+        return updated;
+      });
+    }, 1000);
+    return () => clearInterval(interval);
+  }, []);
 
+  const handleAccept = (orderId) => {
+    const prepTime = prepTimes[orderId] || 20;
     setOrders((prevOrders) =>
       prevOrders.map((order) =>
         order.orderId === orderId
-          ? { ...order, status: "Preparing", prepTime } // Store prep time
+          ? { ...order, status: "Preparing", prepTime }
           : order
       )
     );
+
+    setPrepCountdowns((prev) => ({
+      ...prev,
+      [orderId]: prepTime * 60,
+    }));
 
     setNewOrderCount((prev) => {
       const updatedCount = Math.max(prev - 1, 0);
@@ -54,6 +75,13 @@ const Home = () => {
     });
   };
 
+  const handleReject = (orderId) => {
+    setOrders((prevOrders) =>
+      prevOrders.filter((order) => order.orderId !== orderId)
+    );
+    setNewOrderCount((prev) => Math.max(prev - 1, 0));
+  };
+
   const handleTimeChange = (orderId, change) => {
     setPrepTimes((prevTimes) => {
       const currentTime = prevTimes[orderId] || 20;
@@ -62,19 +90,14 @@ const Home = () => {
     });
   };
 
-  const handleReject = (orderId) => {
-    setOrders((prevOrders) =>
-      prevOrders.filter((order) => order.orderId !== orderId)
-    );
-    setNewOrderCount((prev) => Math.max(prev - 1, 0));
-  };
-
   const handleMoveToNextStatus = (orderId, currentStatus) => {
-    const nextStatus =
+    let nextStatus =
       currentStatus === "Preparing"
         ? "Ready"
         : currentStatus === "Ready"
         ? "Picked Up"
+        : currentStatus === "Picked Up"
+        ? "Delivered"
         : null;
 
     if (nextStatus) {
@@ -87,15 +110,20 @@ const Home = () => {
     }
   };
 
+  const handleCardPress = (item) => {
+    if (item.status === "Picked Up") {
+      navigation.navigate("OrderSummary", { order: item });
+    }
+  };
+
   const filteredOrders = orders.filter(
     (order) => order.status === selectedStatus
   );
 
   return (
     <View style={styles.container}>
-      {/* Status Filter Buttons */}
       <View style={styles.statusContainer}>
-        {["Preparing", "Ready", "Picked Up"].map((status) => (
+        {["Preparing", "Ready", "Picked Up", "Delivered"].map((status) => (
           <TouchableOpacity
             key={status}
             style={[
@@ -116,101 +144,127 @@ const Home = () => {
         ))}
       </View>
 
-      {/* Orders List */}
       <FlatList
         data={filteredOrders}
         keyExtractor={(item) => item.orderId}
         renderItem={({ item }) => (
-          <View style={styles.orderContainer}>
-            {/* Order ID and Time */}
-            <View style={styles.rowContainer}>
-              <Text style={styles.boldText}>Order ID: {item.orderId}</Text>
-              <Text style={styles.boldText}>Time: {item.timePlaced}</Text>
-            </View>
-
-            {/* Customer Name */}
-            <Text style={styles.customerName}>
-              Customer: {item.customerName}
-            </Text>
-
-            {/* Order Items */}
-            {item.items.map((orderItem, index) => (
-              <View key={index} style={styles.rowContainer}>
-                <Text style={styles.itemText}>
-                  {orderItem.quantity} x {orderItem.name}
-                </Text>
-                <Text style={styles.itemText}>
-                  ₹{orderItem.price * orderItem.quantity}
-                </Text>
+          <TouchableOpacity
+            onPress={() => handleCardPress(item)}
+            disabled={item.status !== "Picked Up"}
+          >
+            <View style={styles.orderContainer}>
+              <View style={styles.headerRow}>
+                {item.status === "Preparing" ? (
+                  <>
+                    <View style={styles.timerBadge}>
+                      <Text style={styles.timerBadgeText}>
+                        {prepCountdowns[item.orderId] >= 0
+                          ? `${Math.floor(prepCountdowns[item.orderId] / 60)}:${String(
+                              prepCountdowns[item.orderId] % 60
+                            ).padStart(2, "0")}`
+                          : `+${Math.abs(Math.floor(prepCountdowns[item.orderId] / 60))}:${String(
+                              Math.abs(prepCountdowns[item.orderId] % 60)
+                            ).padStart(2, "0")}`}
+                      </Text>
+                    </View>
+                    <View style={styles.idTimeContainer}>
+                      <Text style={styles.OrderText}>{item.orderId}</Text>
+                      <Text style={styles.boldText}>{item.timePlaced}</Text>
+                    </View>
+                  </>
+                ) : (
+                  <View style={styles.readyPickedHeader}>
+                    <Text style={styles.boldText}>{item.orderId}</Text>
+                    <Text style={styles.boldText}>{item.timePlaced}</Text>
+                  </View>
+                )}
               </View>
-            ))}
 
-            {/* Total Amount */}
-            <Text style={styles.totalAmount}>Total: ₹{item.totalAmount}</Text>
-
-            {/* Preparation Time Selector (only for New Orders) */}
-            {item.status === "New" && (
-              <View style={styles.timeSelector}>
-                <TouchableOpacity
-                  style={styles.timeButton}
-                  onPress={() => handleTimeChange(item.orderId, -1)}
-                >
-                  <Text style={styles.Text}>-</Text>
-                </TouchableOpacity>
-
-                <Text style={styles.timeText}>
-                  {prepTimes[item.orderId] || 20} min
-                </Text>
-
-                <TouchableOpacity
-                  style={styles.timeButton}
-                  onPress={() => handleTimeChange(item.orderId, 1)}
-                >
-                  <Text style={styles.Text}>+</Text>
-                </TouchableOpacity>
-              </View>
-            )}
-
-            {/* Action Buttons */}
-            <View style={styles.buttonContainer}>
-              {item.status === "New" ? (
-                <>
-                  <TouchableOpacity
-                    style={styles.rejectButton}
-                    onPress={() => handleReject(item.orderId)}
-                  >
-                    <Text style={styles.whiteText}>Reject</Text>
-                  </TouchableOpacity>
-                  <TouchableOpacity
-                    style={styles.acceptButton}
-                    onPress={() => handleAccept(item.orderId)}
-                  >
-                    <Text style={styles.whiteText}>Accept</Text>
-                  </TouchableOpacity>
-                </>
-              ) : (
-                <TouchableOpacity
-                  style={styles.nextStageButton}
-                  onPress={() =>
-                    handleMoveToNextStatus(item.orderId, item.status)
-                  }
-                >
-                  <Text style={styles.whiteText}>
-                    {item.status === "Preparing"
-                      ? "Mark Ready"
-                      : "Mark Picked Up"}
+              {item.items.map((orderItem, index) => (
+                <View key={`${item.orderId}-${index}`} style={styles.rowContainer}>
+                  <Text style={styles.itemText}>
+                    {orderItem.quantity} x {orderItem.name}
                   </Text>
-                </TouchableOpacity>
+                  <Text style={styles.itemText}>
+                    ₹{orderItem.price * orderItem.quantity}
+                  </Text>
+                </View>
+              ))}
+
+              <Text style={styles.totalAmount}>Total: ₹{item.totalAmount}</Text>
+
+              <View style={styles.locationRow}>
+                <Icon name="map-marker" size={25} color="red" />
+                <Text style={styles.locationText}>{item.location}</Text>
+              </View>
+
+              {item.status === "New" && (
+                <View style={styles.timeSelector}>
+                  <TouchableOpacity
+                    style={styles.timeButton}
+                    onPress={() => handleTimeChange(item.orderId, -1)}
+                  >
+                    <Text style={styles.Text}>-</Text>
+                  </TouchableOpacity>
+                  <Text style={styles.timeText}>
+                    {prepTimes[item.orderId] || 20} min
+                  </Text>
+                  <TouchableOpacity
+                    style={styles.timeButton}
+                    onPress={() => handleTimeChange(item.orderId, 1)}
+                  >
+                    <Text style={styles.Text}>+</Text>
+                  </TouchableOpacity>
+                </View>
               )}
+
+              <View style={styles.buttonContainer}>
+                {item.status === "New" ? (
+                  <>
+                    <TouchableOpacity
+                      style={styles.rejectButton}
+                      onPress={() => handleReject(item.orderId)}
+                    >
+                      <Text style={styles.whiteText}>Reject</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity
+                      style={styles.acceptButton}
+                      onPress={() => handleAccept(item.orderId)}
+                    >
+                      <Text style={styles.whiteText}>Accept</Text>
+                    </TouchableOpacity>
+                  </>
+                ) : item.status === "Delivered" ? (
+                  <View style={styles.deliveredBadge}>
+                    <Text style={styles.whiteText}>Delivered</Text>
+                  </View>
+                ) : (
+                  <TouchableOpacity
+                    style={styles.nextStageButton}
+                    onPress={() => handleMoveToNextStatus(item.orderId, item.status)}
+                  >
+                    <Text style={styles.whiteText}>
+                      {item.status === "Preparing"
+                        ? "Mark Ready"
+                        : item.status === "Ready"
+                        ? "Mark Picked Up"
+                        : item.status === "Picked Up"
+                        ? "Mark Delivery"
+                        : null}
+                    </Text>
+                  </TouchableOpacity>
+                )}
+              </View>
             </View>
-          </View>
+          </TouchableOpacity>
         )}
         ListEmptyComponent={
-          <Text style={styles.noOrdersText}>No Orders in {selectedStatus}</Text>
+          <Text style={styles.noOrdersText}>
+            No Orders in {selectedStatus}
+          </Text>
         }
       />
 
-      {/* New Order Notification Button */}
       {newOrderCount > 0 && (
         <TouchableOpacity
           style={styles.newOrderButton}
@@ -239,17 +293,17 @@ const styles = StyleSheet.create({
     padding: 10,
     borderRadius: 5,
     borderWidth: 1,
-    borderColor: "gray",
     flex: 1,
     marginHorizontal: 5,
     alignItems: "center",
   },
   activeStatus: {
-    backgroundColor: "#4CAF50",
+    backgroundColor: "#3B271C",
   },
   statusText: {
     fontSize: 16,
     fontWeight: "bold",
+    color: "#3B271C",
   },
   whiteText: {
     color: "white",
@@ -257,7 +311,7 @@ const styles = StyleSheet.create({
     textAlign: "center",
   },
   Text: {
-    color: "#4CAF50",
+    color: "#3B271C",
     fontWeight: "bold",
     textAlign: "center",
     fontSize: 24,
@@ -265,27 +319,41 @@ const styles = StyleSheet.create({
   noOrdersText: {
     textAlign: "center",
     fontWeight: "bold",
+    marginTop: 20,
   },
   orderContainer: {
     backgroundColor: "white",
     padding: 20,
-    borderRadius: 10,
+    borderRadius: 15,
     width: "90%",
     alignSelf: "center",
     marginBottom: 10,
+    elevation: 4,
+    position: "relative",
   },
   rowContainer: {
     flexDirection: "row",
     justifyContent: "space-between",
     marginVertical: 5,
   },
+  headerRow: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "flex-start",
+    marginBottom: 10,
+  },
+  idTimeContainer: {
+    flexDirection: "column",
+    alignItems: "flex-end",
+    flex: 1,
+  },
+  OrderText: {
+    fontWeight: "bold",
+    fontSize: 20,
+  },
   boldText: {
     fontWeight: "bold",
     fontSize: 16,
-  },
-  customerName: {
-    fontSize: 16,
-    marginVertical: 5,
   },
   itemText: {
     fontSize: 16,
@@ -294,7 +362,16 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: "bold",
     textAlign: "right",
-    marginVertical: 10,
+    marginTop: 10,
+  },
+  locationRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginTop: 5,
+  },
+  locationText: {
+    marginLeft: 5,
+    fontSize: 16,
   },
   buttonContainer: {
     flexDirection: "row",
@@ -310,7 +387,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   acceptButton: {
-    backgroundColor: "#4CAF50",
+    backgroundColor: "green",
     padding: 10,
     borderRadius: 5,
     flex: 1,
@@ -318,14 +395,15 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   nextStageButton: {
-    backgroundColor: "#4CAF50",
+    backgroundColor: "#E8BA58",
     padding: 10,
     borderRadius: 5,
     flex: 1,
     alignItems: "center",
+    color: "black"
   },
   newOrderButton: {
-    backgroundColor: "#4CAF50",
+    backgroundColor: "green",
     width: "100%",
     height: 150,
     justifyContent: "center",
@@ -338,33 +416,51 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     marginTop: 10,
-    color: "black"
   },
   timeButton: {
-    borderWidth: 2,       // Defines the border thickness
-    borderColor: '#4CAF50', // Defines the border color
-    borderStyle: 'solid',
+    borderWidth: 2,
+    borderColor: "#3B271C",
+    borderStyle: "solid",
     padding: 10,
-    fontSize: 20,
     borderRadius: 5,
     marginHorizontal: 5,
-    color: "black"
   },
   timeText: {
     fontSize: 20,
     fontWeight: "bold",
-    backgroundColor: "#4CAF50",
+    backgroundColor: "#3B271C",
     color: "white",
-    paddingLeft: 80,
-    paddingRight: 80,
-    paddingTop: 15,
-    paddingBottom: 15,
+    paddingHorizontal: 90,
+    paddingVertical: 15,
     borderRadius: 5,
   },
-  timeButtonText: {
-    fontSize: 28,  
+  timerBadge: {
+    backgroundColor: "orange",
+    width: 60,
+    height: 60,
+    borderRadius: 30,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  timerBadgeText: {
+    color: "white",
     fontWeight: "bold",
-    color: "black", 
+  },
+  readyPickedHeader: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    width: "100%",
+    marginBottom: 10,
+  },
+  deliveredBadge: {
+    backgroundColor: "green",
+    position: "absolute",
+    bottom: -10,
+    left: 0,
+    paddingHorizontal: 10,
+    paddingVertical: 5,
+    borderRadius: 20,
+    zIndex: 1,
   },
 });
 

@@ -1,13 +1,13 @@
 import React, { useState, useLayoutEffect } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert, ScrollView } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert, ScrollView, Image } from 'react-native';
+import Icon from 'react-native-vector-icons/Ionicons'; // Importing Ionicons
 
 const ForgotPassword = ({ navigation }) => {
   const [email, setEmail] = useState('');
 
-  // Disable the header for this screen
   useLayoutEffect(() => {
     navigation.setOptions({
-      headerShown: false,  // This will hide the header for the Forgot Password screen
+      headerShown: false,
     });
   }, [navigation]);
 
@@ -17,35 +17,43 @@ const ForgotPassword = ({ navigation }) => {
       return;
     }
 
-    // Simulate sending a reset link (you can replace this with actual logic)
     Alert.alert('Password Reset', 'A password reset link has been sent to your email');
-    navigation.navigate('Login'); // Navigate back to Login after submitting
+    navigation.navigate('Login');
   };
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
+      <Image
+        source={require('../../assets/Logo.png')}
+        style={styles.logo}
+        resizeMode="contain"
+      />
+
       <Text style={styles.title}>Forgot Password</Text>
       <Text style={styles.instructions}>
         Enter your email address to receive a password reset link.
       </Text>
 
-      {/* Email input */}
-      <TextInput
-        style={styles.input}
-        placeholder="Enter your email"
-        placeholderTextColor="#888"
-        value={email}
-        onChangeText={setEmail}
-        keyboardType="email-address"
-        autoCapitalize="none"
-      />
+      {/* Email Input Container */}
+      <View style={styles.inputContainer}>
+        <Icon name="mail-outline" size={20} color="#7D5A50" style={styles.inputIcon} />
+        <TextInput
+          style={styles.input}
+          placeholder="Enter your email"
+          placeholderTextColor="#B2A59B"
+          value={email}
+          onChangeText={setEmail}
+          keyboardType="email-address"
+          autoCapitalize="none"
+        />
+      </View>
 
-      {/* Submit button */}
+      {/* Submit Button */}
       <TouchableOpacity style={styles.button} onPress={handleSubmit}>
         <Text style={styles.buttonText}>Send Reset Link</Text>
       </TouchableOpacity>
 
-      {/* Back to login link */}
+      {/* Back to Login */}
       <TouchableOpacity onPress={() => navigation.navigate('Login')}>
         <Text style={styles.backToLoginText}>Back to Login</Text>
       </TouchableOpacity>
@@ -55,56 +63,71 @@ const ForgotPassword = ({ navigation }) => {
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
+    flexGrow: 1,
     justifyContent: 'center',
     padding: 20,
-    backgroundColor: '#f0f1f6', // Light background color for a soft feel
+    backgroundColor: '#3B271C',
+  },
+  logo: {
+    width: 200,
+    height: 200,
+    alignSelf: 'center',
+    marginBottom: 10,
   },
   title: {
-    fontSize: 32,
-    fontWeight: 'bold',
-    color: '#333',
+    fontSize: 30,
+    fontWeight: '600',
+    color: '#F5E8C7',
     textAlign: 'center',
     marginBottom: 30,
   },
   instructions: {
     fontSize: 16,
-    color: '#555',
+    color: '#F5E8C7',
     textAlign: 'center',
     marginBottom: 40,
     paddingHorizontal: 20,
   },
-  input: {
-    height: 55,
-    backgroundColor: '#ffffff',
-    borderRadius: 10,
+  inputContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#F5E8C7',
+    borderRadius: 12,
     marginBottom: 20,
-    paddingLeft: 20,
-    fontSize: 16,
+    paddingHorizontal: 10,
     borderWidth: 1,
-    borderColor: '#ddd',
-    shadowColor: '#000', // Add subtle shadow for modern feel
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 5,
+    borderColor: '#E0C097',
+  },
+  inputIcon: {
+    marginRight: 8,
+  },
+  input: {
+    flex: 1,
+    height: 55,
+    fontSize: 16,
+    color: '#3B271C',
   },
   button: {
-    backgroundColor: '#4CAF50', // Modern green color
+    backgroundColor: '#E8BA58',
     paddingVertical: 15,
     borderRadius: 50,
     alignItems: 'center',
     marginTop: 20,
-    elevation: 5, // Add shadow for a raised effect
+    elevation: 5,
+    shadowColor: '#FFD700',
+    shadowOffset: { width: 0, height: 8 },
+    shadowOpacity: 0.3,
+    shadowRadius: 10,
   },
   buttonText: {
-    color: '#fff',
+    color: '#3B271C',
     fontSize: 18,
     fontWeight: 'bold',
   },
   backToLoginText: {
     textAlign: 'center',
     marginTop: 20,
-    color: '#4CAF50', // Modern green color for "Back to Login"
+    color: '#C8AE7D',
     fontSize: 16,
     fontWeight: 'bold',
   },

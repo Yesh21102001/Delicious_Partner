@@ -5,7 +5,7 @@
     "version": "1.0.0",
     "orientation": "portrait",
     "splash": {
-      "image": "./src/assets/splash1.png",
+      "image": "./src/assets/Logo.png",
       "resizeMode": "contain",
       "backgroundColor": "#3B271C"
     },

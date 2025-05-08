@@ -1,172 +1,139 @@
-import React, { useState, useEffect } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, Image, Dimensions, StatusBar  } from 'react-native';
-import Swiper from 'react-native-swiper';
+import React from "react";
+import {
+  View,
+  Text,
+  ImageBackground,
+  StyleSheet,
+  Dimensions,
+  TouchableOpacity,
+  SafeAreaView,
+} from "react-native";
+import Swiper from "react-native-swiper";
+import { LinearGradient } from "expo-linear-gradient";
 
-const { width, height } = Dimensions.get('window');
+const { width, height } = Dimensions.get("window");
 
 const Started = ({ navigation }) => {
-  useEffect(() => {
-    navigation.setOptions({ headerShown: false });
-  }, [navigation]);
+  const slides = [
+    {
+      id: 1,
+      description: "Manage Orders and menu in a breeze.",
+      image: require("../assets/high-angle-arrangement-different-pakistan-goodies.jpg"),
+    },
+    {
+      id: 2,
+      description: "Get business insights and improvement tips.",
+      image: require("../assets/top-view-finger-pressing-percentage-tablet.jpg"),
+    },
+    {
+      id: 3,
+      description: "Manage Luxurious Dining Bookings.",
+      image: require("../assets/classic-luxury-style-restaurant-with-tables-chairs.jpg"),
+    },
+  ];
 
-  // State to manage hover effect
-  const [hoveredIndex, setHoveredIndex] = useState(null);
-
-  // Function to handle hover effect (set the hovered image index)
-  const handleHoverIn = (index) => {
-    setHoveredIndex(index);
-  };
-
-  const handleHoverOut = () => {
-    setHoveredIndex(null);
-  };
-
-  // Function to render the images with text at the bottom
-  const renderImage = (source, index, text) => {
-    return (
-      <TouchableOpacity
-        style={styles.imageContainer}
-        activeOpacity={0.9} // Simulating hover effect on press
-        onPressIn={() => handleHoverIn(index)} // Apply hover effect on press
-        onPressOut={handleHoverOut} // Remove hover effect when press ends
-      >
-        <Image
-          source={source}
-          style={[styles.image, hoveredIndex === index && styles.imageHovered]} // Add hover style
-        />
-        {/* Darken effect when hovered */}
-        {hoveredIndex === index && <View style={styles.overlay} />}
-        {/* Black effect at the bottom of the image */}
-        <View style={styles.blackBottomOverlay} />
-        {/* Text at the bottom of the image */}
-        <View style={styles.textContainer}>
-          <Text style={styles.text}>{text}</Text>
-        </View>
-      </TouchableOpacity>
-    );
+  const handleGetStarted = () => {
+    navigation.navigate("Login");
   };
 
   return (
-    <View style={styles.container}>
-      <StatusBar barStyle="light-content" backgroundColor="black" />
+    <SafeAreaView style={styles.container}>
       <Swiper
-        style={styles.wrapper}
-        showsButtons={false}
-        autoplay={true}
+        autoplay
+        autoplayTimeout={3}
+        showsPagination
         dotStyle={styles.dotStyle}
         activeDotStyle={styles.activeDotStyle}
-        paginationStyle={styles.paginationStyle}
+        loop={false}
       >
-        <View style={styles.slide}>
-          {renderImage(require('../assets/high-angle-arrangement-different-pakistan-goodies.jpg'), 0, 'Manage Orders and menu in a breeze')}
-        </View>
-        <View style={styles.slide}>
-          {renderImage(require('../assets/top-view-finger-pressing-percentage-tablet.jpg'), 1, 'Get business insights and improvement tips')}
-        </View>
-        <View style={styles.slide}>
-          {renderImage(require('../assets/classic-luxury-style-restaurant-with-tables-chairs.jpg'), 2, 'Manage Luxurious Dining Bookings')}
-        </View>
-      </Swiper>
+        {slides.map((slide, index) => (
+          <View key={slide.id} style={styles.slide}>
+            <ImageBackground source={slide.image} style={styles.backgroundImage}>
+              <LinearGradient
+                colors={[
+                  "rgba(59, 39, 28, 0.2)",
+                  "rgba(59, 39, 28, 0.5)",
+                  "rgba(59, 39, 28, 0.8)",
+                ]}
+                style={styles.overlay}
+              />
+              <View style={styles.textContainer}>
+                <Text style={styles.description}>{slide.description}</Text>
+              </View>
 
-      {/* Login Button */}
-      <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('Login')}>
-        <Text style={styles.buttonText}>Login</Text>
-      </TouchableOpacity>
-    </View>
+              {index === slides.length - 1 && (
+                <View style={styles.buttonWrapper}>
+                  <TouchableOpacity style={styles.button} onPress={handleGetStarted}>
+                    <Text style={styles.buttonText}>Get Started</Text>
+                  </TouchableOpacity>
+                </View>
+              )}
+            </ImageBackground>
+          </View>
+        ))}
+      </Swiper>
+    </SafeAreaView>
   );
 };
 
 const styles = StyleSheet.create({
-  container: {
+  container: { flex: 1, backgroundColor: "#fff" },
+  slide: { flex: 1 },
+  backgroundImage: {
     flex: 1,
-    backgroundColor: '#fff',
+    width: "100%",
+    height: "100%",
+    resizeMode: "cover",
+    position: "absolute",
   },
-  wrapper: {
-    height: "85%",
-  },
-  slide: {
-    flex: 1,
-    justifyContent: 'flex-start',
-    alignItems: 'center',
-  },
-  imageContainer: {
-    position: 'relative',
-    width: width,
-    height: height * 0.8,
-  },
-  image: {
-    width: width,
-    height: height * 0.8,
-    resizeMode: 'cover',
-    transition: 'transform 0.3s ease',  
-  },
-  imageHovered: {
-    transform: [{ scale: 1.1 }]  
-  },
-  overlay: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-    backgroundColor: 'black',
-    opacity: 0.3, 
-  },
-  blackBottomOverlay: {
-    position: 'absolute',
-    bottom: 0,
-    left: 0,
-    width: '100%',
-    height: height * 0.9,
-    backgroundColor: 'black',
-    opacity: 0.6, 
-  },
+  overlay: { ...StyleSheet.absoluteFillObject },
   textContainer: {
-    position: 'absolute',
-    bottom: 20,  
-    left: 20,
-    right: 20,
-    justifyContent: 'left',
-    alignItems: 'left',
-    zIndex: 1, 
+    position: "absolute",
+    bottom: 150,
+    paddingHorizontal: 20,
   },
-  text: {
-    color: '#fff',
-    fontSize: 28,
-    fontWeight: 'bold',
-    textAlign: 'left',
-    padding: 10,
-    borderRadius: 5,
+  description: {
+    fontSize: 26,
+    fontWeight: "bold",
+    color: "#fff",
+    textAlign: "left",
+    lineHeight: 30,
+    marginBottom: 30,
+  },
+  buttonWrapper: {
+    position: "absolute",
+    bottom: 70,
+    width: "100%",
+    alignItems: "center",
   },
   button: {
-    backgroundColor: '#4CAF50',
+    backgroundColor: "#f0cb75",
     paddingVertical: 15,
-    borderRadius: 50,
-    alignSelf: 'center',
-    position: 'absolute',
-    bottom: 80,
-    width: '90%',
+    paddingHorizontal: 30,
+    borderRadius: 25,
+    width: "90%",
+    alignItems: "center",
   },
   buttonText: {
-    color: '#fff',
+    color: "#3B271C",
     fontSize: 18,
-    fontWeight: 'bold',
-    textAlign: 'center',
-  },
-  paginationStyle: {
-    bottom: 30, 
+    fontWeight: "bold",
   },
   dotStyle: {
-    width: 8,  
-    height: 8, 
+    backgroundColor: "#ccc",
+    width: 8,
+    height: 8,
     borderRadius: 4,
-    marginHorizontal: 5,  
+    marginHorizontal: 3,
+    marginBottom: 20,
   },
   activeDotStyle: {
-    width: 8,  
-    height: 8, 
-    borderRadius: 4,
-    backgroundColor: '#4CAF50',
+    backgroundColor: "#f0cb75",
+    width: 10,
+    height: 10,
+    borderRadius: 5,
+    marginHorizontal: 3,
+    marginBottom: 20,
   },
 });
 

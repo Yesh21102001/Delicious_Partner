@@ -58,7 +58,6 @@ const Menu = () => {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.header}>Menu</Text>
       <FlatList
         data={categories}
         keyExtractor={(category) => category.id}
@@ -69,7 +68,7 @@ const Menu = () => {
               <Switch
                 value={category.isEnabled}
                 onValueChange={() => toggleCategory(category.id)}
-                trackColor={{ false: '#ddd', true: '#4CAF50' }}
+                trackColor={{ false: '#ddd', true: 'green' }}
                 thumbColor={category.isEnabled ? '#fff' : '#f4f4f4'}
               />
             </View>
@@ -86,7 +85,7 @@ const Menu = () => {
                     value={item.isEnabled}
                     onValueChange={() => toggleItem(category.id, item.id)}
                     disabled={!category.isEnabled}
-                    trackColor={{ false: '#ccc', true: '#4CAF50' }}
+                    trackColor={{ false: '#ccc', true: 'green' }}
                     thumbColor={item.isEnabled ? '#fff' : '#f4f4f4'}
                   />
                 </View>
@@ -113,7 +112,7 @@ const styles = StyleSheet.create({
     color: '#333',
   },
   categoryCard: {
-    backgroundColor: '#fff',
+    backgroundColor: '#F5E8C7',
     borderRadius: 12,
     padding: 15,
     marginBottom: 15,
@@ -151,6 +150,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: '#444',
     flex: 1,
+    fontWeight: "bold",
   },
   disabledText: {
     color: 'gray',
