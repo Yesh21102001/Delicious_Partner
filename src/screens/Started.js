@@ -7,6 +7,7 @@ import {
   Dimensions,
   TouchableOpacity,
   SafeAreaView,
+  StatusBar,
 } from "react-native";
 import Swiper from "react-native-swiper";
 import { LinearGradient } from "expo-linear-gradient";
@@ -38,6 +39,7 @@ const Started = ({ navigation }) => {
 
   return (
     <SafeAreaView style={styles.container}>
+      <StatusBar backgroundColor="white" barStyle="white" />
       <Swiper
         autoplay
         autoplayTimeout={3}
@@ -107,7 +109,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   button: {
-    backgroundColor: "#f0cb75",
+    backgroundColor: "#FFEAC5",
     paddingVertical: 15,
     paddingHorizontal: 30,
     borderRadius: 25,
@@ -115,7 +117,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   buttonText: {
-    color: "#3B271C",
+    color: "#6C4E31",
     fontSize: 18,
     fontWeight: "bold",
   },
@@ -128,7 +130,7 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   activeDotStyle: {
-    backgroundColor: "#f0cb75",
+    backgroundColor: "#FFEAC5",
     width: 10,
     height: 10,
     borderRadius: 5,

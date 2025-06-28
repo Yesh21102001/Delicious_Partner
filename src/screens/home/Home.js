@@ -5,6 +5,7 @@ import {
   StyleSheet,
   TouchableOpacity,
   FlatList,
+  StatusBar,
 } from "react-native";
 import Icon from "react-native-vector-icons/FontAwesome";
 import { useNavigation } from "@react-navigation/native";
@@ -122,6 +123,7 @@ const Home = () => {
 
   return (
     <View style={styles.container}>
+      <StatusBar backgroundColor="black" barStyle="dark-content" />
       <View style={styles.statusContainer}>
         {["Preparing", "Ready", "Picked Up", "Delivered"].map((status) => (
           <TouchableOpacity
@@ -298,12 +300,12 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   activeStatus: {
-    backgroundColor: "#3B271C",
+    backgroundColor: "#603F26",
   },
   statusText: {
     fontSize: 16,
     fontWeight: "bold",
-    color: "#3B271C",
+    color: "#603F26",
   },
   whiteText: {
     color: "white",
@@ -311,7 +313,7 @@ const styles = StyleSheet.create({
     textAlign: "center",
   },
   Text: {
-    color: "#3B271C",
+    color: "#603F26",
     fontWeight: "bold",
     textAlign: "center",
     fontSize: 24,
@@ -395,7 +397,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   nextStageButton: {
-    backgroundColor: "#E8BA58",
+    backgroundColor: "#603F26",
     padding: 10,
     borderRadius: 5,
     flex: 1,
@@ -419,7 +421,7 @@ const styles = StyleSheet.create({
   },
   timeButton: {
     borderWidth: 2,
-    borderColor: "#3B271C",
+    borderColor: "#603F26",
     borderStyle: "solid",
     padding: 10,
     borderRadius: 5,
@@ -428,7 +430,7 @@ const styles = StyleSheet.create({
   timeText: {
     fontSize: 20,
     fontWeight: "bold",
-    backgroundColor: "#3B271C",
+    backgroundColor: "#603F26",
     color: "white",
     paddingHorizontal: 90,
     paddingVertical: 15,
@@ -462,6 +464,11 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     zIndex: 1,
   },
+  // status: {
+  //   backgroundColor: "white",
+  //   height: 50,
+  //   color: "black",
+  // }
 });
 
 export default Home;

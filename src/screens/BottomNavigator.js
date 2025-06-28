@@ -8,6 +8,7 @@ import {
   Animated,
   Dimensions,
   Image,
+  StatusBar,
 } from "react-native";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
@@ -25,7 +26,7 @@ const Stack = createNativeStackNavigator();
 const { width } = Dimensions.get("window");
 
 const BottomNavigator = () => {
-  const [isEnabled, setIsEnabled] = useState(false);
+  const [restaurantOnline, setRestaurantOnline] = useState(true);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [selectedSidebar, setSelectedSidebar] = useState(null);
   const animatedValue = useRef(new Animated.Value(0)).current;
@@ -33,8 +34,8 @@ const BottomNavigator = () => {
   const navigation = useNavigation();
 
   const toggleSwitch = () => {
-    const newValue = !isEnabled;
-    setIsEnabled(newValue);
+    const newValue = !restaurantOnline;
+    setRestaurantOnline(newValue);
     Animated.timing(animatedValue, {
       toValue: newValue ? 1 : 0,
       duration: 300,
@@ -71,6 +72,8 @@ const BottomNavigator = () => {
       });
     } else if (item === "Profile") {
       navigation.navigate("Profile");
+    } else if (item === "Offers") {
+      navigation.navigate("Offers");
     }
   };
 
@@ -104,7 +107,7 @@ const BottomNavigator = () => {
         {/* Sidebar Main Content & Logout */}
         <View style={styles.sidebarContentContainer}>
           <View style={styles.sidebarContent}>
-            {["Home", "Dining", "Add-Menu", "Schedule Time-On"].map(
+            {["Home", "Dining", "Add-Menu", "Schedule Time-On", "Offers"].map(
               (item, index) => (
                 <TouchableOpacity
                   key={index}
@@ -140,12 +143,13 @@ const BottomNavigator = () => {
         <Stack.Screen name="Main">
           {() => (
             <SafeAreaView style={styles.container}>
+              <StatusBar backgroundColor="white" barStyle="white" />
               {/* Header */}
               <View style={styles.header}>
                 <TouchableOpacity
                   style={[
                     styles.switch,
-                    isEnabled ? styles.switchOn : styles.switchOff,
+                    restaurantOnline ? styles.switchOn : styles.switchOff,
                   ]}
                   onPress={toggleSwitch}
                   activeOpacity={0.8}
@@ -168,10 +172,10 @@ const BottomNavigator = () => {
                     <Text
                       style={[
                         styles.switchText,
-                        isEnabled ? styles.onText : styles.offText,
+                        restaurantOnline ? styles.onText : styles.offText,
                       ]}
                     >
-                      {isEnabled ? "Online" : "Offline"}
+                      {restaurantOnline ? "Online" : "Offline"}
                     </Text>
                   </Animated.View>
                 </TouchableOpacity>
@@ -199,11 +203,11 @@ const BottomNavigator = () => {
                       <Ionicons
                         name={iconName}
                         size={28}
-                        color={focused ? "#E8BA58" : "gray"}
+                        color={focused ? "#6C4E31" : "gray"}
                       />
                     );
                   },
-                  tabBarActiveTintColor: "#E8BA58",
+                  tabBarActiveTintColor: "#6C4E31",
                   tabBarInactiveTintColor: "gray",
                   tabBarStyle: {
                     backgroundColor: "white",
@@ -221,7 +225,15 @@ const BottomNavigator = () => {
                 })}
               >
                 <Tab.Screen name="Home" component={Home} />
-                <Tab.Screen name="Menu" component={Menu} />
+                <Tab.Screen name="Menu">
+                  {() => (
+                    <Menu
+                      restaurantOnline={restaurantOnline}
+                      setRestaurantOnline={setRestaurantOnline}
+                    />
+                  )}
+                </Tab.Screen>
+
                 <Tab.Screen name="Orders" component={Orders} />
                 <Tab.Screen name="Insights" component={Insights} />
               </Tab.Navigator>
@@ -255,6 +267,7 @@ const styles = StyleSheet.create({
     backgroundColor: "white",
     paddingVertical: 15,
     paddingHorizontal: 20,
+    height: 100,
   },
   sidebar: {
     position: "absolute",
@@ -267,18 +280,19 @@ const styles = StyleSheet.create({
     zIndex: 20,
   },
   restaurantName: {
-    color: "#E8BA58",
+    color: "#603F26",
     fontSize: 26,
     fontWeight: "bold",
     marginBottom: 10,
     textAlign: "center",
   },
   restaurantName1: {
-    color: "#E8BA58",
+    color: "#603F26",
     fontSize: 26,
     fontWeight: "bold",
     marginBottom: 5,
     textAlign: "center",
+    marginTop: 50,
   },
   profileSection: {
     flexDirection: "row",
@@ -286,7 +300,7 @@ const styles = StyleSheet.create({
     marginBottom: 15,
     justifyContent: "flex-start",
     marginTop: 15,
-    backgroundColor: "#F5E8C7",
+    backgroundColor: "#FFEAC5",
     padding: 10,
     borderRadius: 10,
   },
@@ -325,6 +339,7 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     justifyContent: "center",
     padding: 2,
+    marginTop: 20,
   },
   switchOn: { backgroundColor: "green" },
   switchOff: { backgroundColor: "red" },
@@ -339,16 +354,16 @@ const styles = StyleSheet.create({
   switchText: { fontSize: 10, fontWeight: "bold" },
   onText: { color: "green" },
   offText: { color: "red" },
-  menuButton: { padding: 10 },
+  menuButton: { padding: 10, marginTop: 20 },
   logoutButton: {
-    backgroundColor: "#E8BA58",
+    backgroundColor: "#603F26",
     paddingVertical: 15,
     borderRadius: 50,
     alignItems: "center",
     justifyContent: "center",
   },
   logoutText: {
-    color: "#3B271C",
+    color: "white",
     fontSize: 18,
     fontWeight: "bold",
     textAlign: "center",

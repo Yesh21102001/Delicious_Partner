@@ -5,9 +5,9 @@
     "version": "1.0.0",
     "orientation": "portrait",
     "splash": {
-      "image": "./src/assets/Logo.png",
-      "resizeMode": "contain",
-      "backgroundColor": "#3B271C"
+      "image": "./src/assets/4X5.jpg",
+      "resizeMode": "cover",
+      "backgroundColor": "#603F26"
     },
     "android": {
       "newArchEnabled": true

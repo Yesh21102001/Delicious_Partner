@@ -25,7 +25,7 @@ const OrderSummary = ({ order }) => {
 
   return (
     <View style={styles.container}>
-      {/* Top #3B271C Background */}
+      {/* Top #603F26 Background */}
       <View style={styles.topBanner}>
         <Text style={styles.orderIdText}>{orderData.orderId}</Text>
         <Text style={styles.customerNameText}>{orderData.customerName}</Text>
@@ -106,7 +106,7 @@ const styles = StyleSheet.create({
   },
   topBanner: {
     height: height * 0.22,
-    backgroundColor: "#3B271C",
+    backgroundColor: "#603F26",
     justifyContent: "center",
     alignItems: "center",
     borderBottomLeftRadius: 20,
@@ -132,7 +132,7 @@ const styles = StyleSheet.create({
     elevation: 5,
   },
   dropButton: {
-    backgroundColor: "#E8BA58",
+    backgroundColor: "#FFDBB5",
     paddingVertical: 12,
     borderRadius: 10,
     alignItems: "center",
@@ -142,7 +142,7 @@ const styles = StyleSheet.create({
     alignSelf: "center", 
   },
   dropButtonText: {
-    color: "#3B271C",
+    color: "#603F26",
     fontSize: 18,
     fontWeight: "bold",
     letterSpacing: 1,
@@ -201,7 +201,7 @@ const styles = StyleSheet.create({
     color: "#444",
   },
   callButton: {
-    backgroundColor: "#3B271C",
+    backgroundColor: "#603F26",
     paddingVertical: 10,
     borderRadius: 8,
     alignItems: "center",
@@ -214,7 +214,7 @@ const styles = StyleSheet.create({
   },
   contactNumber: {
     fontSize: 18,
-    color: "#E8BA58",
+    color: "black",
     textAlign: "center",
     marginTop: 10,
     fontWeight: "600",
@@ -225,7 +225,7 @@ const styles = StyleSheet.create({
   },
   paidText: {
     fontSize: 20,
-    color: "#E8BA58",
+    color: "black",
     fontWeight: "bold",
   },
   codText: {
@@ -241,7 +241,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   deliveredButton: {
-    backgroundColor: "#3B271C",
+    backgroundColor: "#603F26",
     paddingVertical: 12,
     borderRadius: 10,
     alignItems: "center",

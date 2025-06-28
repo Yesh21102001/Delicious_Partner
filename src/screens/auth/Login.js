@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState } from "react";
 import {
   View,
   Text,
@@ -9,12 +9,13 @@ import {
   ScrollView,
   Image,
   ActivityIndicator,
-} from 'react-native';
-import Icon from 'react-native-vector-icons/Ionicons';
+} from "react-native";
+import Icon from "react-native-vector-icons/Ionicons";
+import axiosInstance from "../../api/axiosInstance"; 
 
 const Login = ({ navigation }) => {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
 
   React.useLayoutEffect(() => {
@@ -22,20 +23,49 @@ const Login = ({ navigation }) => {
   }, [navigation]);
 
   const handleLogin = async () => {
-    navigation.navigate('Home');
+    setLoading(true);
+    try {
+      const response = await axiosInstance.post("/admin/login", {
+        email,
+        password,
+      });
+
+      if (response.status === 200) {
+        Alert.alert("Success", response.data.message);
+        navigation.navigate("Home");
+      } else {
+        Alert.alert("Login Failed", response.data.message || "Invalid credentials");
+      }
+    } catch (error) {
+      console.error("Login error:", error);
+      const errorMsg =
+        error.response?.data?.message || "Could not reach the server.";
+      Alert.alert("Login Error", errorMsg);
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleForgotPassword = () => {
-    navigation.navigate('ForgotPassword');
+    navigation.navigate("ForgotPassword");
   };
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
-      <Image source={require('../../assets/Logo.png')} style={styles.logo} resizeMode="contain" />
+      <Image
+        source={require("../../assets/Logo.png")}
+        style={styles.logo}
+        resizeMode="contain"
+      />
       <Text style={styles.title}>Welcome Back!</Text>
 
       <View style={styles.inputContainer}>
-        <Icon name="mail-outline" size={20} color="#7D5A50" style={styles.inputIcon} />
+        <Icon
+          name="mail-outline"
+          size={20}
+          color="#7D5A50"
+          style={styles.inputIcon}
+        />
         <TextInput
           style={styles.input}
           placeholder="Enter your email"
@@ -48,7 +78,12 @@ const Login = ({ navigation }) => {
       </View>
 
       <View style={styles.inputContainer}>
-        <Icon name="lock-closed-outline" size={20} color="#7D5A50" style={styles.inputIcon} />
+        <Icon
+          name="lock-closed-outline"
+          size={20}
+          color="#7D5A50"
+          style={styles.inputIcon}
+        />
         <TextInput
           style={styles.input}
           placeholder="Enter your password"
@@ -60,13 +95,21 @@ const Login = ({ navigation }) => {
         />
       </View>
 
-      <TouchableOpacity style={styles.button} onPress={handleLogin} disabled={loading}>
-        {loading ? <ActivityIndicator color="#3B271C" /> : <Text style={styles.buttonText}>Login</Text>}
+      <TouchableOpacity
+        style={styles.button}
+        onPress={handleLogin}
+        disabled={loading}
+      >
+        {loading ? (
+          <ActivityIndicator color="#3B271C" />
+        ) : (
+          <Text style={styles.buttonText}>Login</Text>
+        )}
       </TouchableOpacity>
 
-      <TouchableOpacity onPress={handleForgotPassword}>
+      {/* <TouchableOpacity onPress={handleForgotPassword}>
         <Text style={styles.forgotPasswordText}>Forgot Password?</Text>
-      </TouchableOpacity>
+      </TouchableOpacity> */}
     </ScrollView>
   );
 };
@@ -74,32 +117,33 @@ const Login = ({ navigation }) => {
 const styles = StyleSheet.create({
   container: {
     flexGrow: 1,
-    justifyContent: 'center',
+    justifyContent: "center",
     padding: 20,
-    backgroundColor: '#3B271C',
+    backgroundColor: "#603F26",
   },
   logo: {
     width: 200,
     height: 200,
-    alignSelf: 'center',
+    alignSelf: "center",
     marginBottom: 10,
   },
   title: {
     fontSize: 30,
-    fontWeight: '600',
-    color: '#F5E8C7',
-    textAlign: 'center',
+    fontWeight: "600",
+    color: "white",
+    textAlign: "center",
     marginBottom: 30,
   },
   inputContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: '#F5E8C7',
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: "white",
+    color: "black",
     borderRadius: 12,
     marginBottom: 20,
     paddingHorizontal: 10,
     borderWidth: 1,
-    borderColor: '#E0C097',
+    borderColor: "#758058",
   },
   inputIcon: {
     marginRight: 8,
@@ -108,27 +152,27 @@ const styles = StyleSheet.create({
     flex: 1,
     height: 55,
     fontSize: 16,
-    color: '#3B271C',
+    color: "#3B271C",
   },
   button: {
-    backgroundColor: '#E8BA58',
+    backgroundColor: "#FFDBB5",
     paddingVertical: 15,
     borderRadius: 50,
-    alignItems: 'center',
+    alignItems: "center",
     marginTop: 20,
     elevation: 5,
   },
   buttonText: {
-    color: '#3B271C',
+    color: "#6C4E31",
     fontSize: 18,
-    fontWeight: 'bold',
+    fontWeight: "bold",
   },
   forgotPasswordText: {
-    textAlign: 'center',
+    textAlign: "center",
     marginTop: 20,
-    color: '#C8AE7D',
+    color: "#C8AE7D",
     fontSize: 16,
-    fontWeight: '500',
+    fontWeight: "500",
   },
 });
 
