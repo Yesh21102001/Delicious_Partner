@@ -10,7 +10,6 @@ import {
   StatusBar,
 } from "react-native";
 import Swiper from "react-native-swiper";
-import { LinearGradient } from "expo-linear-gradient";
 
 const { width, height } = Dimensions.get("window");
 
@@ -51,14 +50,9 @@ const Started = ({ navigation }) => {
         {slides.map((slide, index) => (
           <View key={slide.id} style={styles.slide}>
             <ImageBackground source={slide.image} style={styles.backgroundImage}>
-              <LinearGradient
-                colors={[
-                  "rgba(59, 39, 28, 0.2)",
-                  "rgba(59, 39, 28, 0.5)",
-                  "rgba(59, 39, 28, 0.8)",
-                ]}
-                style={styles.overlay}
-              />
+              {/* 🔄 Replaced LinearGradient with black overlay */}
+              <View style={styles.blackOverlay} />
+
               <View style={styles.textContainer}>
                 <Text style={styles.description}>{slide.description}</Text>
               </View>
@@ -88,7 +82,10 @@ const styles = StyleSheet.create({
     resizeMode: "cover",
     position: "absolute",
   },
-  overlay: { ...StyleSheet.absoluteFillObject },
+  blackOverlay: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: "rgba(0, 0, 0, 0.5)", // 🔄 Black transparent
+  },
   textContainer: {
     position: "absolute",
     bottom: 150,

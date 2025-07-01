@@ -1,54 +1,88 @@
-import React, { useState } from "react";
-import { View, Text, StyleSheet, ScrollView, Dimensions, TouchableOpacity } from "react-native";
-import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
+import React, { useEffect, useState } from "react";
+import {
+  View,
+  Text,
+  StyleSheet,
+  ScrollView,
+  Dimensions,
+  TouchableOpacity,
+  ActivityIndicator,
+  Alert,
+} from "react-native";
+import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 
 const { height } = Dimensions.get("window");
 
-const dummyOrder = {
-  orderId: "#12345",
-  customerName: "John Doe",
-  orderTime: "12:30 PM",
-  itemsOrdered: [
-    { name: "Chicken Biryani", quantity: 2 },
-    { name: "Paneer Butter Masala", quantity: 1 },
-    { name: "Butter Naan", quantity: 3 },
-  ],
-  location: "12-82, Ganesh Nagar, Madhuruwada, Visakhapatnam, 530048",
-  contactNumber: "+91 9876543210",
-  paymentType: "Paid",
-  totalAmount: 750,
-};
+const BASE_URL = "http://192.168.29.186:2000/api/order"; // Use your IP
 
-const OrderSummary = ({ order }) => {
-  const orderData = order || dummyOrder;
+const OrderSummary = ({ route }) => {
+  const { orderId } = route.params;
+  const [order, setOrder] = useState(null);
   const [showNumber, setShowNumber] = useState(false);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetchOrderDetails();
+  }, []);
+
+  const fetchOrderDetails = async () => {
+    try {
+      const res = await fetch(`${BASE_URL}/${orderId}`);
+      const data = await res.json();
+
+      if (!res.ok) {
+        Alert.alert("Error", "Failed to fetch order details");
+        return;
+      }
+
+      setOrder(data);
+      setLoading(false);
+    } catch (error) {
+      console.error("Error fetching order:", error);
+      Alert.alert("Error", "Something went wrong");
+      setLoading(false);
+    }
+  };
+
+  if (loading) {
+    return (
+      <View style={styles.centered}>
+        <ActivityIndicator size="large" color="#603F26" />
+      </View>
+    );
+  }
+
+  if (!order) {
+    return (
+      <View style={styles.centered}>
+        <Text style={{ color: "red", fontSize: 18 }}>Order not found</Text>
+      </View>
+    );
+  }
 
   return (
     <View style={styles.container}>
-      {/* Top #603F26 Background */}
       <View style={styles.topBanner}>
-        <Text style={styles.orderIdText}>{orderData.orderId}</Text>
-        <Text style={styles.customerNameText}>{orderData.customerName}</Text>
+        <Text style={styles.orderIdText}>#{order.orderId}</Text>
+        <Text style={styles.customerNameText}>Customer ID: {order.userId}</Text>
       </View>
 
-      {/* Card Section */}
       <View style={styles.card}>
         <TouchableOpacity style={styles.dropButton}>
           <Text style={styles.dropButtonText}>GO TO DROP</Text>
         </TouchableOpacity>
 
-        {/* Scrollable Details */}
         <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.scrollContent}>
-          {/* Order ID and Time */}
           <View style={styles.orderInfoRow}>
-            <Text style={styles.orderIdSmall}>{orderData.orderId}</Text>
-            <Text style={styles.orderTime}>{orderData.orderTime}</Text>
+            <Text style={styles.orderIdSmall}>#{order.orderId}</Text>
+            <Text style={styles.orderTime}>
+              {new Date(order.createdAt).toLocaleTimeString()}
+            </Text>
           </View>
 
-          {/* Items Ordered */}
           <View style={styles.section}>
             <Text style={styles.sectionTitle}>Items Ordered</Text>
-            {orderData.itemsOrdered.map((item, index) => (
+            {order.items.map((item, index) => (
               <View key={index} style={styles.itemRow}>
                 <Text style={styles.itemName}>{item.name}</Text>
                 <Text style={styles.itemQuantity}>x {item.quantity}</Text>
@@ -56,15 +90,13 @@ const OrderSummary = ({ order }) => {
             ))}
           </View>
 
-          {/* Location */}
           <View style={styles.section}>
             <View style={styles.locationRow}>
               <MaterialIcons name="location-on" size={20} color="red" />
-              <Text style={styles.detailText}>{orderData.location}</Text>
+              <Text style={styles.detailText}>{order.deliveryLocation}</Text>
             </View>
           </View>
 
-          {/* Call Button */}
           <View style={styles.section}>
             <TouchableOpacity
               style={styles.callButton}
@@ -74,22 +106,19 @@ const OrderSummary = ({ order }) => {
             </TouchableOpacity>
 
             {showNumber && (
-              <Text style={styles.contactNumber}>{orderData.contactNumber}</Text>
+              <Text style={styles.contactNumber}>+91 9876543210</Text>
+              // Replace with actual number when available
             )}
           </View>
 
-          {/* Amount */}
           <View style={styles.amountSection}>
-            {orderData.paymentType === "Paid" ? (
-              <Text style={styles.paidText}>Amount Paid: ₹{orderData.totalAmount}</Text>
-            ) : (
-              <Text style={styles.codText}>Amount to Pay: ₹{orderData.totalAmount}</Text>
-            )}
+            <Text style={styles.paidText}>
+              Amount Paid: ₹{order.total}
+            </Text>
           </View>
         </ScrollView>
       </View>
 
-      {/* Delivered Button */}
       <View style={styles.deliveredButtonContainer}>
         <TouchableOpacity style={styles.deliveredButton}>
           <Text style={styles.deliveredButtonText}>DELIVERED</Text>
@@ -100,10 +129,7 @@ const OrderSummary = ({ order }) => {
 };
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#f5f5f5",
-  },
+  container: { flex: 1, backgroundColor: "#f5f5f5" },
   topBanner: {
     height: height * 0.22,
     backgroundColor: "#603F26",
@@ -124,7 +150,7 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
   },
   card: {
-    flex: 1,  
+    flex: 1,
     backgroundColor: "white",
     marginTop: -20,
     paddingHorizontal: 20,
@@ -136,10 +162,10 @@ const styles = StyleSheet.create({
     paddingVertical: 12,
     borderRadius: 10,
     alignItems: "center",
-    justifyContent: "center",  
+    justifyContent: "center",
     marginBottom: 20,
     width: 200,
-    alignSelf: "center", 
+    alignSelf: "center",
   },
   dropButtonText: {
     color: "#603F26",
@@ -147,9 +173,7 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     letterSpacing: 1,
   },
-  scrollContent: {
-    paddingBottom: 30,
-  },
+  scrollContent: { paddingBottom: 30 },
   orderInfoRow: {
     flexDirection: "row",
     justifyContent: "space-between",
@@ -165,9 +189,7 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     color: "#555",
   },
-  section: {
-    marginTop: 15,
-  },
+  section: { marginTop: 15 },
   sectionTitle: {
     fontSize: 18,
     fontWeight: "600",
@@ -179,20 +201,12 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     marginVertical: 6,
   },
-  itemName: {
-    fontSize: 16,
-    color: "#555",
-  },
-  itemQuantity: {
-    fontSize: 16,
-    fontWeight: "bold",
-    color: "#333",
-  },
+  itemName: { fontSize: 16, color: "#555" },
+  itemQuantity: { fontSize: 16, fontWeight: "bold", color: "#333" },
   locationRow: {
     flexDirection: "row",
     alignItems: "center",
     marginVertical: 5,
-    padding: "5",
   },
   detailText: {
     fontSize: 17,
@@ -228,11 +242,6 @@ const styles = StyleSheet.create({
     color: "black",
     fontWeight: "bold",
   },
-  codText: {
-    fontSize: 18,
-    color: "red",
-    fontWeight: "bold",
-  },
   deliveredButtonContainer: {
     position: "absolute",
     bottom: 20,
@@ -251,6 +260,11 @@ const styles = StyleSheet.create({
     color: "white",
     fontSize: 18,
     fontWeight: "bold",
+  },
+  centered: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
   },
 });
 
